@@ -35,16 +35,11 @@
     <label>Current photos & videos</label>
     <div class="thumb-row">
       {% for p in dish.photos %}
-        <div class="thumb-item">
-          {% if p.url|is_video %}
-          <video class="thumb" src="{{ p.url }}" controls muted></video>
-          {% else %}
-          <img class="thumb" src="{{ p.url }}" alt="Dish photo">
-          {% endif %}
-          <label class="thumb-remove">
-            <input type="checkbox" name="remove_photos" value="{{ p.id }}"> Remove
-          </label>
-        </div>
+        {% if p.url|is_video %}
+        <video class="thumb" src="{{ p.url }}" controls muted></video>
+        {% else %}
+        <img class="thumb" src="{{ p.url }}" alt="Dish photo">
+        {% endif %}
       {% endfor %}
     </div>
   </div>

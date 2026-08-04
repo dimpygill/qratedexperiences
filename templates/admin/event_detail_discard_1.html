@@ -31,25 +31,16 @@
       {% if event.photos %}
       <div class="thumb-row" style="margin-bottom: 1em;">
         {% for p in event.photos %}
-        <div class="thumb-item">
-          {% if p.url|is_video %}
-          <video class="thumb" src="{{ p.url }}" controls muted></video>
-          {% else %}
-          <img class="thumb" src="{{ p.url }}" alt="Event photo">
-          {% endif %}
-          <label class="thumb-remove">
-            <input type="checkbox" name="remove_photos" form="event-photos-form" value="{{ p.id }}"> Remove
-          </label>
-        </div>
+        <img class="thumb" src="{{ p.url }}" alt="Event photo">
         {% endfor %}
       </div>
       {% else %}
       <p style="opacity:0.6; font-size:0.9rem;">No photos yet.</p>
       {% endif %}
-      <form id="event-photos-form" method="POST" action="{{ url_for('admin_event_edit', event_id=event.id) }}" enctype="multipart/form-data" class="inline-form">
+      <form method="POST" action="{{ url_for('admin_event_edit', event_id=event.id) }}" enctype="multipart/form-data" class="inline-form">
         <input type="hidden" name="name" value="{{ event.name }}">
-        <input type="file" name="photos" multiple accept="image/*,video/*">
-        <button type="submit" class="btn btn-outline btn-sm">Save changes</button>
+        <input type="file" name="photos" multiple accept="image/*" required>
+        <button type="submit" class="btn btn-outline btn-sm">Upload</button>
       </form>
     </div>
 

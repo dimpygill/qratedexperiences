@@ -282,16 +282,10 @@ def admin_event_edit(event_id):
 
         photos = request.files.getlist("photos")
         urls = save_uploaded_files(photos)
-        new_attachments = to_attachments(urls)
-
-        remove_ids = set(request.form.getlist("remove_photos"))
-        existing = event.get("photos") or []
-        if remove_ids:
-            existing = [p for p in existing if p.get("id") not in remove_ids]
-
-        if remove_ids or new_attachments:
+        if urls:
+            existing = event.get("photos") or []
             db.update_record_friendly(
-                "events", event_id, {"photos": existing + new_attachments}
+                "events", event_id, {"photos": existing + to_attachments(urls)}
             )
 
         flash("Event updated.", "success")
@@ -464,17 +458,11 @@ def admin_dish_edit(dish_id):
         data = {k: v for k, v in data.items() if v is not None}
         db.update_record_friendly("dishes", dish_id, data)
 
-        remove_ids = set(request.form.getlist("remove_photos"))
-        existing = dish.get("photos") or []
-        if remove_ids:
-            existing = [p for p in existing if p.get("id") not in remove_ids]
-
         photos = request.files.getlist("photos")
         urls = save_uploaded_files(photos)
-        new_attachments = to_attachments(urls)
-
-        if remove_ids or new_attachments:
-            db.update_record_friendly("dishes", dish_id, {"photos": existing + new_attachments})
+        if urls:
+            existing = dish.get("photos") or []
+            db.update_record_friendly("dishes", dish_id, {"photos": existing + to_attachments(urls)})
 
         flash("Dish updated.", "success")
         return redirect(url_for("admin_dishes_list"))
