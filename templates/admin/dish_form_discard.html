@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if dish else 'New' }} Dish — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">{{ 'Edit' if dish else 'Create' }}</div>
+    <h2 class="mt-0">{{ 'Edit Dish' if dish else 'New Dish' }}</h2>
+  </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="panel" style="max-width: 640px;">
+  <div class="field">
+    <label for="name">Dish name</label>
+    <input type="text" id="name" name="name" required value="{{ dish.name if dish else '' }}" placeholder="e.g. Butter Chicken">
+  </div>
+
+  <div class="field">
+    <label for="category">Category</label>
+    <select id="category" name="category">
+      <option value="">Select</option>
+      {% for c in categories %}
+      <option value="{{ c }}" {{ 'selected' if dish and dish.category == c }}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="ingredients">Ingredients (optional)</label>
+    <textarea id="ingredients" name="ingredients" placeholder="One per line, or freeform notes">{{ dish.ingredients if dish else '' }}</textarea>
+  </div>
+
+  {% if dish and dish.photos %}
+  <div class="field">
+    <label>Current photos</label>
+    <div class="thumb-row">
+      {% for p in dish.photos %}
+      <img class="thumb" src="{{ p.url }}" alt="Dish photo">
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="field">
+    <label for="photos">{{ 'Add more photos' if dish else 'Photos' }}</label>
+    <input type="file" id="photos" name="photos" multiple accept="image/*">
+  </div>
+
+  <button type="submit" class="btn btn-primary">{{ 'Save Changes' if dish else 'Add Dish' }}</button>
+  <a href="{{ url_for('admin_dishes_list') }}" class="btn btn-outline">Cancel</a>
+</form>
+
+{% endblock %}

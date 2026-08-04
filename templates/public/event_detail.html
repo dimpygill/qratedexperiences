@@ -1,0 +1,66 @@
+{% extends "public/base.html" %}
+{% block title %}{{ event.name }} — Q-Rated Experiences{% endblock %}
+{% block content %}
+
+<section class="hero" style="min-height: 60vh;">
+  <div class="hero-media" {% if event.photos %}style="background-image:url('{{ event.photos|first_photo }}')"{% endif %}></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">{{ event.type or 'Event' }}{% if event.theme %} &middot; {{ event.theme }}{% endif %}</div>
+    <h1>{{ event.name }}</h1>
+    <div class="hero-sub mono" style="text-transform:none; opacity:1; color: var(--bronze-light); font-size:0.9rem;">
+      {% if event.date %}{{ event.date }}{% endif %}
+      {% if event.guests %} &middot; {{ event.guests }} guests{% endif %}
+    </div>
+  </div>
+</section>
+
+{% if event.photos and event.photos|length > 1 %}
+<section class="section-tight">
+  <div class="container">
+    <div class="runner"><span class="runner-label">The Event</span></div>
+    <div class="grid grid-3">
+      {% for photo in event.photos[1:] %}
+      <div class="card-media" style="border-radius: var(--radius); background-image:url('{{ photo.url }}'); aspect-ratio: 1;"></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if event.notes %}
+<section class="section-tight">
+  <div class="container" style="max-width: 720px;">
+    <div class="runner"><span class="runner-label">The Story</span></div>
+    <p style="font-size: 1.05rem;">{{ event.notes }}</p>
+  </div>
+</section>
+{% endif %}
+
+{% if event.dishes %}
+<section class="section-tight">
+  <div class="container">
+    <div class="runner"><span class="runner-label">On the Menu</span></div>
+    <div class="grid grid-4">
+      {% for dish in event.dishes %}
+      <div class="card">
+        <div class="card-media" {% if dish.photos %}style="background-image:url('{{ dish.photos|first_photo }}')"{% endif %}></div>
+        <div class="card-body">
+          <div class="card-eyebrow">{{ dish.category or '' }}</div>
+          <div class="card-title" style="font-size: 1.1rem;">{{ dish.name }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section-tight" style="background: var(--ink); color: var(--ivory);">
+  <div class="container text-center">
+    <h2 style="color: var(--ivory);">Planning something of your own?</h2>
+    <p style="opacity:0.75; max-width: 480px; margin: 0 auto var(--space-3);">Let's design a menu and presentation just as considered for your event.</p>
+    <a href="{{ url_for('public_inquire') }}" class="btn btn-outline-light">Request a Quote</a>
+  </div>
+</section>
+
+{% endblock %}

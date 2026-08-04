@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% block title %}Events — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">Manage</div>
+    <h2 class="mt-0">Events</h2>
+  </div>
+  <a href="{{ url_for('admin_event_new') }}" class="btn btn-primary">+ New Event</a>
+</div>
+
+<div class="filter-bar">
+  <a href="{{ url_for('admin_events_list') }}" class="filter-chip {{ 'active' if not active_filter }}">All</a>
+  {% for s in statuses %}
+  <a href="{{ url_for('admin_events_list', status=s) }}" class="filter-chip {{ 'active' if active_filter == s }}">{{ s }}</a>
+  {% endfor %}
+</div>
+
+{% if events %}
+<table class="data-table">
+  <thead>
+    <tr><th>Name</th><th>Type</th><th>Date</th><th>Guests</th><th>Status</th><th>Charged</th><th>Profit</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for e in events %}
+    <tr>
+      <td><a href="{{ url_for('admin_event_detail', event_id=e.id) }}">{{ e.name }}</a></td>
+      <td>{{ e.type or '—' }}</td>
+      <td>{{ e.date or '—' }}</td>
+      <td>{{ e.guests or '—' }}</td>
+      <td><span class="badge badge-status-{{ e.status }}">{{ e.status or '—' }}</span></td>
+      <td>{{ e.charged|currency }}</td>
+      <td>{{ e.profit|currency }}</td>
+      <td class="row-actions">
+        <a href="{{ url_for('admin_event_detail', event_id=e.id) }}" class="btn btn-outline btn-sm">View</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <h3>No events yet</h3>
+  <p>Create your first event to get started.</p>
+  <a href="{{ url_for('admin_event_new') }}" class="btn btn-primary" style="margin-top:1em;">+ New Event</a>
+</div>
+{% endif %}
+
+{% endblock %}

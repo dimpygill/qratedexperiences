@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Q-Rated Experiences — Bespoke Event Catering{% endblock %}</title>
+  <meta name="description" content="Q-Rated Experiences designs and caters bespoke events — every table setting, dish, and detail chosen for your occasion.">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="{{ url_for('public_home') }}" class="brand">
+        <img src="{{ url_for('static', filename='img/logo-on-light.png') }}" alt="Q-Rated Experiences" class="brand-logo">
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('public_gallery') }}" class="{{ 'active' if request.endpoint == 'public_gallery' }}">Past Events</a>
+        <a href="{{ url_for('public_about') }}" class="{{ 'active' if request.endpoint == 'public_about' }}">About</a>
+        <a href="{{ url_for('public_inquire') }}" class="btn btn-primary btn-sm">Request a Quote</a>
+      </div>
+    </div>
+  </nav>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container" style="padding-top: 1.5rem;">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="brand" style="margin-bottom: 0.8em;">
+          <img src="{{ url_for('static', filename='img/logo-on-dark.png') }}" alt="Q-Rated Experiences" class="brand-logo brand-logo-lg">
+        </div>
+        <p style="opacity:0.7; max-width: 320px; font-size: 0.92rem;">Every plate, every place setting, chosen for your event — not pulled off a shelf.</p>
+      </div>
+      <div>
+        <div class="mono" style="margin-bottom:0.8em;">Get in touch</div>
+        <p style="opacity:0.85; font-size: 0.92rem;">
+          <a href="{{ url_for('public_inquire') }}">Request a quote →</a>
+        </p>
+      </div>
+    </div>
+    <div class="container" style="margin-top: var(--space-4);">
+      <small>&copy; {{ 2026 }} Q-Rated Experiences. All rights reserved.</small>
+    </div>
+  </footer>
+</body>
+</html>

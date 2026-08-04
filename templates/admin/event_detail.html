@@ -1,0 +1,201 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ event.name }} — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">{{ event.type or 'Event' }} {% if event.theme %}&middot; {{ event.theme }}{% endif %}</div>
+    <h2 class="mt-0">{{ event.name }}</h2>
+    <span class="badge badge-status-{{ event.status }}">{{ event.status or '—' }}</span>
+  </div>
+  <div class="flex gap-2">
+    <a href="{{ url_for('admin_event_edit', event_id=event.id) }}" class="btn btn-outline">Edit Event</a>
+    <form method="POST" action="{{ url_for('admin_event_delete', event_id=event.id) }}" onsubmit="return confirm('Delete this event permanently?');">
+      <button type="submit" class="btn btn-danger">Delete</button>
+    </form>
+  </div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card"><div class="label">Guests</div><div class="value" style="font-size:1.4rem;">{{ event.guests or '—' }}</div></div>
+  <div class="stat-card"><div class="label">Charged</div><div class="value" style="font-size:1.4rem;">{{ (event.charged or 0)|currency }}</div></div>
+  <div class="stat-card"><div class="label">Total Cost</div><div class="value" style="font-size:1.4rem;">{{ (event.total_cost or 0)|currency }}</div></div>
+  <div class="stat-card"><div class="label">Profit</div><div class="value" style="font-size:1.4rem;">{{ (event.profit or 0)|currency }}</div></div>
+</div>
+
+<div class="detail-grid">
+  <div>
+    <!-- PHOTOS -->
+    <div class="panel">
+      <div class="panel-title">Event Photos</div>
+      {% if event.photos %}
+      <div class="thumb-row" style="margin-bottom: 1em;">
+        {% for p in event.photos %}
+        <img class="thumb" src="{{ p.url }}" alt="Event photo">
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="opacity:0.6; font-size:0.9rem;">No photos yet.</p>
+      {% endif %}
+      <form method="POST" action="{{ url_for('admin_event_edit', event_id=event.id) }}" enctype="multipart/form-data" class="inline-form">
+        <input type="hidden" name="name" value="{{ event.name }}">
+        <input type="file" name="photos" multiple accept="image/*" required>
+        <button type="submit" class="btn btn-outline btn-sm">Upload</button>
+      </form>
+    </div>
+
+    <!-- DISHES -->
+    <div class="panel">
+      <div class="panel-title">Dishes Served</div>
+      {% if event.dishes %}
+      <table class="data-table" style="margin-bottom:1em;">
+        <thead><tr><th>Dish</th><th>Category</th></tr></thead>
+        <tbody>
+        {% for d in event.dishes %}
+          <tr><td>{{ d.name }}</td><td>{{ d.category or '—' }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="opacity:0.6; font-size:0.9rem; margin-bottom:1em;">No dishes linked yet.</p>
+      {% endif %}
+      <form method="POST" action="{{ url_for('admin_event_link_dish', event_id=event.id) }}" class="inline-form">
+        <select name="dish_id" required style="min-width:220px; padding:0.6em; border:1px solid var(--line); border-radius:var(--radius);">
+          <option value="">Select a dish to link</option>
+          {% for d in all_dishes %}
+          <option value="{{ d.id }}">{{ d.name }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-outline btn-sm">Link Dish</button>
+        <a href="{{ url_for('admin_dish_new') }}" class="btn btn-outline btn-sm">+ New Dish</a>
+      </form>
+    </div>
+
+    <!-- EXPENSES -->
+    <div class="panel">
+      <div class="panel-title">Expenses (Decor / Grocery / Other)</div>
+      {% if event.expenses %}
+      <table class="data-table" style="margin-bottom:1em;">
+        <thead><tr><th>Item</th><th>Type</th><th>Cost</th><th></th><th></th></tr></thead>
+        <tbody>
+        {% for exp in event.expenses %}
+          <tr>
+            <td>{{ exp.item_name }}</td>
+            <td>{{ exp.type }}</td>
+            <td>{{ exp.cost|currency }}</td>
+            <td>{% if exp.photo %}<img class="thumb" style="width:40px;height:40px;" src="{{ exp.photo|first_photo }}" alt="">{% endif %}</td>
+            <td>
+              <form method="POST" action="{{ url_for('admin_expense_delete', expense_id=exp.id) }}" onsubmit="return confirm('Remove this expense?');">
+                <input type="hidden" name="event_id" value="{{ event.id }}">
+                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="opacity:0.6; font-size:0.9rem; margin-bottom:1em;">No expenses logged yet.</p>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('admin_event_add_expense', event_id=event.id) }}" enctype="multipart/form-data">
+        <div class="field-row">
+          <div class="field">
+            <label>Item name</label>
+            <input type="text" name="item_name" required placeholder="e.g. Gold candle holders">
+          </div>
+          <div class="field">
+            <label>Type</label>
+            <select name="type">
+              {% for t in expense_types %}
+              <option value="{{ t }}">{{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Cost</label>
+            <input type="number" name="cost" step="0.01" min="0" required>
+          </div>
+          <div class="field">
+            <label>Photo</label>
+            <input type="file" name="photo" accept="image/*">
+          </div>
+        </div>
+        <div class="field">
+          <label>Notes</label>
+          <input type="text" name="notes" placeholder="Optional">
+        </div>
+        <button type="submit" class="btn btn-outline btn-sm">Add Expense</button>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <!-- STAFF -->
+    <div class="panel">
+      <div class="panel-title">Staff Assigned</div>
+      {% if event.assignments %}
+        {% for a in event.assignments %}
+        <div style="padding: 0.6em 0; border-bottom: 1px solid var(--line);">
+          <div class="flex-between">
+            <strong style="font-size:0.9rem;">{{ a.staff[0].name if a.staff else 'Unassigned' }}</strong>
+            <span class="mono" style="color:var(--charcoal); opacity:0.7;">{{ a.amount_paid|currency }}</span>
+          </div>
+          <div style="font-size:0.82rem; opacity:0.65;">{{ a.role_on_event or '' }}</div>
+          <form method="POST" action="{{ url_for('admin_assignment_delete', assignment_id=a.id) }}" onsubmit="return confirm('Remove this assignment?');" style="margin-top:0.4em;">
+            <input type="hidden" name="event_id" value="{{ event.id }}">
+            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+          </form>
+        </div>
+        {% endfor %}
+      {% else %}
+      <p style="opacity:0.6; font-size:0.9rem; margin-bottom:1em;">No staff assigned yet.</p>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('admin_event_assign_staff', event_id=event.id) }}" style="margin-top:1em;">
+        <div class="field">
+          <label>Staff member</label>
+          <select name="staff_id" required>
+            <option value="">Select</option>
+            {% for s in all_staff %}
+            <option value="{{ s.id }}">{{ s.name }} ({{ s.role or 'Staff' }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label>Role on this event</label>
+          <input type="text" name="role_on_event" placeholder="e.g. Lead Chef">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Pay type used</label>
+            <select name="pay_type_used">
+              {% for pt in pay_types %}
+              <option value="{{ pt }}">{{ pt }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="field">
+            <label>Amount paid</label>
+            <input type="number" name="amount_paid" step="0.01" min="0" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline btn-sm">Assign Staff</button>
+        <a href="{{ url_for('admin_staff_new') }}" class="btn btn-outline btn-sm">+ New Staff</a>
+      </form>
+    </div>
+
+    {% if event.client %}
+    <div class="panel">
+      <div class="panel-title">Client</div>
+      <p style="margin-bottom:0.3em;"><strong>{{ event.client.name }}</strong></p>
+      <p style="font-size:0.88rem; opacity:0.75; margin-bottom:0;">{{ event.client.phone or '' }}<br>{{ event.client.email or '' }}</p>
+      <a href="{{ url_for('admin_client_detail', client_id=event.client.id) }}" class="btn btn-outline btn-sm" style="margin-top:0.8em;">View Client</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

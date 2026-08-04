@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ client.name }} — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">Client</div>
+    <h2 class="mt-0">{{ client.name }}</h2>
+    <p style="opacity:0.7;">{{ client.phone or '' }} {% if client.phone and client.email %}&middot;{% endif %} {{ client.email or '' }}</p>
+  </div>
+  <a href="{{ url_for('admin_client_edit', client_id=client.id) }}" class="btn btn-outline">Edit</a>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Booking History</div>
+  {% if events %}
+  <table class="data-table">
+    <thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Charged</th></tr></thead>
+    <tbody>
+      {% for e in events %}
+      <tr>
+        <td><a href="{{ url_for('admin_event_detail', event_id=e.id) }}">{{ e.name }}</a></td>
+        <td>{{ e.date or '—' }}</td>
+        <td><span class="badge badge-status-{{ e.status }}">{{ e.status }}</span></td>
+        <td>{{ e.charged|currency }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="opacity:0.6;">No events linked to this client yet.</p>
+  {% endif %}
+</div>
+
+{% if client.notes %}
+<div class="panel">
+  <div class="panel-title">Notes</div>
+  <p>{{ client.notes }}</p>
+</div>
+{% endif %}
+
+{% endblock %}

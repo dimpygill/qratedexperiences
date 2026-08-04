@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if staff else 'New' }} Staff — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">{{ 'Edit' if staff else 'Add' }}</div>
+    <h2 class="mt-0">{{ 'Edit Staff Member' if staff else 'New Staff Member' }}</h2>
+  </div>
+</div>
+
+<form method="POST" class="panel" style="max-width: 560px;">
+  <div class="field">
+    <label for="name">Full name</label>
+    <input type="text" id="name" name="name" required value="{{ staff.name if staff else '' }}">
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="role">Role</label>
+      <select id="role" name="role">
+        <option value="">Select</option>
+        {% for r in roles %}
+        <option value="{{ r }}" {{ 'selected' if staff and staff.role == r }}>{{ r }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone" value="{{ staff.phone if staff else '' }}">
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="pay_type">Pay type</label>
+      <select id="pay_type" name="pay_type">
+        <option value="">Select</option>
+        {% for pt in pay_types %}
+        <option value="{{ pt }}" {{ 'selected' if staff and staff.pay_type == pt }}>{{ pt }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="rate">Default rate</label>
+      <input type="number" id="rate" name="rate" step="0.01" min="0" value="{{ staff.rate if staff else '' }}">
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes">{{ staff.notes if staff else '' }}</textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary">{{ 'Save Changes' if staff else 'Add Staff Member' }}</button>
+  <a href="{{ url_for('admin_staff_list') }}" class="btn btn-outline">Cancel</a>
+</form>
+
+{% endblock %}

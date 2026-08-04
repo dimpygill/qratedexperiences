@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+{% block title %}Dishes — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">Library</div>
+    <h2 class="mt-0">Dishes</h2>
+  </div>
+  <a href="{{ url_for('admin_dish_new') }}" class="btn btn-primary">+ New Dish</a>
+</div>
+
+{% if dishes %}
+<div class="grid grid-4">
+  {% for d in dishes %}
+  <div class="card">
+    {% set thumb = d.photos|first_photo %}
+    {% if thumb %}
+    <div class="card-media" style="background-image:url('{{ thumb }}')"></div>
+    {% elif d.photos %}
+    <div class="card-media" style="display:flex;align-items:center;justify-content:center;background:#111;color:#fff;font-size:0.85rem;">Video</div>
+    {% else %}
+    <div class="card-media"></div>
+    {% endif %}
+    <div class="card-body">
+      <div class="card-eyebrow">{{ d.category or '' }}</div>
+      <div class="card-title" style="font-size:1.1rem;">{{ d.name }}</div>
+      <a href="{{ url_for('admin_dish_edit', dish_id=d.id) }}" class="btn btn-outline btn-sm" style="margin-top:0.5em;">Edit</a>
+      <form method="POST" action="{{ url_for('admin_dish_delete', dish_id=d.id) }}" onsubmit="return confirm('Delete this dish?');" style="display:inline;">
+        <button type="submit" class="btn btn-danger btn-sm" style="margin-top:0.5em;">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <h3>No dishes yet</h3>
+  <p>Add dishes as you cook them — they'll be reusable across events.</p>
+  <a href="{{ url_for('admin_dish_new') }}" class="btn btn-primary" style="margin-top:1em;">+ New Dish</a>
+</div>
+{% endif %}
+
+{% endblock %}

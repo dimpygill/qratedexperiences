@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin — Q-Rated Experiences{% endblock %}</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <a href="{{ url_for('admin_dashboard') }}" class="brand">
+        <img src="{{ url_for('static', filename='img/logo-on-dark.png') }}" alt="Q-Rated Experiences" class="brand-logo">
+      </a>
+      <nav class="admin-nav">
+        <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint == 'admin_dashboard' }}">Dashboard</a>
+        <a href="{{ url_for('admin_events_list') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('admin_event') }}">Events</a>
+        <a href="{{ url_for('admin_inquiries_list') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('admin_inquir') }}">Inquiries</a>
+        <a href="{{ url_for('admin_clients_list') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('admin_client') }}">Clients</a>
+        <div class="divider"></div>
+        <a href="{{ url_for('admin_dishes_list') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('admin_dish') }}">Dishes</a>
+        <a href="{{ url_for('admin_staff_list') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('admin_staff') }}">Staff</a>
+        <div class="divider"></div>
+        <a href="{{ url_for('public_home') }}" target="_blank">View public site ↗</a>
+        <a href="{{ url_for('admin_logout') }}" class="logout">Log out</a>
+      </nav>
+    </aside>
+    <div class="admin-main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</body>
+</html>

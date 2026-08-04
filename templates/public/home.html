@@ -1,0 +1,59 @@
+{% extends "public/base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-media" {% if featured and featured[0].photos %}style="background-image:url('{{ featured[0].photos|first_photo }}')"{% endif %}></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Bespoke Event Catering &amp; Presentation</div>
+    <h1>Every table tells<br>the story of the day.</h1>
+    <p class="hero-sub">We don't recycle a standard spread. Menu, crockery, linens, and decor are chosen fresh for each event — gilded for a wedding, playful for a birthday, precise for a boardroom.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('public_inquire') }}" class="btn btn-primary">Request a Quote</a>
+      <a href="{{ url_for('public_gallery') }}" class="btn btn-outline-light">See Past Events</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="runner"><span class="runner-label">Recent Work</span></div>
+    <div class="flex-between" style="margin-bottom: var(--space-3);">
+      <h2 class="mt-0">Curated for these occasions</h2>
+      <a href="{{ url_for('public_gallery') }}" class="btn btn-outline btn-sm">View full gallery</a>
+    </div>
+
+    {% if featured %}
+    <div class="grid grid-3">
+      {% for event in featured %}
+      <a href="{{ url_for('public_event_detail', event_id=event.id) }}" class="card">
+        <div class="card-media" {% if event.photos %}style="background-image:url('{{ event.photos|first_photo }}')"{% endif %}></div>
+        <div class="card-body">
+          <div class="card-eyebrow">{{ event.type or 'Event' }}{% if event.theme %} &middot; {{ event.theme }}{% endif %}</div>
+          <div class="card-title">{{ event.name }}</div>
+          <div class="card-meta">
+            {% if event.date %}<span>{{ event.date }}</span>{% endif %}
+            {% if event.guests %}<span>{{ event.guests }} guests</span>{% endif %}
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h3>Our showcase is warming up</h3>
+      <p>Completed events will appear here once they're added.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section-tight" style="background: var(--ink); color: var(--ivory);">
+  <div class="container text-center">
+    <div class="hero-eyebrow" style="justify-content:center; display:flex;">Ready to plan something?</div>
+    <h2 style="color: var(--ivory);">Tell us about your event</h2>
+    <p style="opacity:0.75; max-width: 520px; margin: 0 auto var(--space-3);">Share a few details and we'll put together a menu and presentation concept suited to your occasion.</p>
+    <a href="{{ url_for('public_inquire') }}" class="btn btn-outline-light">Request a Quote</a>
+  </div>
+</section>
+
+{% endblock %}

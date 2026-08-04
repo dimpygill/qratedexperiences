@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% block title %}Staff — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">Team</div>
+    <h2 class="mt-0">Staff</h2>
+  </div>
+  <a href="{{ url_for('admin_staff_new') }}" class="btn btn-primary">+ Add Staff Member</a>
+</div>
+
+{% if staff %}
+<table class="data-table">
+  <thead><tr><th>Name</th><th>Role</th><th>Phone</th><th>Pay Type</th><th>Rate</th><th></th></tr></thead>
+  <tbody>
+    {% for s in staff %}
+    <tr>
+      <td>{{ s.name }}</td>
+      <td>{{ s.role or '—' }}</td>
+      <td>{{ s.phone or '—' }}</td>
+      <td>{{ s.pay_type or '—' }}</td>
+      <td>{{ s.rate|currency if s.rate else '—' }}</td>
+      <td class="row-actions">
+        <a href="{{ url_for('admin_staff_edit', staff_id=s.id) }}" class="btn btn-outline btn-sm">Edit</a>
+        <form method="POST" action="{{ url_for('admin_staff_delete', staff_id=s.id) }}" onsubmit="return confirm('Remove this staff member?');">
+          <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <h3>No staff added yet</h3>
+  <a href="{{ url_for('admin_staff_new') }}" class="btn btn-primary" style="margin-top:1em;">+ Add Staff Member</a>
+</div>
+{% endif %}
+
+{% endblock %}

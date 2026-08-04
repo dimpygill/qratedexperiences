@@ -1,0 +1,84 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Edit' if event else 'New' }} Event — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">{{ 'Edit' if event else 'Create' }}</div>
+    <h2 class="mt-0">{{ 'Edit Event' if event else 'New Event' }}</h2>
+  </div>
+</div>
+
+<form method="POST" enctype="multipart/form-data" class="panel" style="max-width: 720px;">
+  <div class="field">
+    <label for="name">Event name</label>
+    <input type="text" id="name" name="name" required value="{{ event.name if event else '' }}" placeholder="e.g. Rao-Mehta Wedding">
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="type">Event type</label>
+      <select id="type" name="type">
+        <option value="">Select</option>
+        {% for t in types %}
+        <option value="{{ t }}" {{ 'selected' if event and event.type == t }}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="theme">Theme</label>
+      <input type="text" id="theme" name="theme" value="{{ event.theme if event else '' }}" placeholder="e.g. Gold &amp; Ivory">
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="date">Event date</label>
+      <input type="date" id="date" name="date" value="{{ event.date if event else '' }}">
+    </div>
+    <div class="field">
+      <label for="guests">Guest count</label>
+      <input type="number" id="guests" name="guests" min="1" value="{{ event.guests if event else '' }}">
+    </div>
+  </div>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="status">Status</label>
+      <select id="status" name="status">
+        {% for s in statuses %}
+        <option value="{{ s }}" {{ 'selected' if event and event.status == s }}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label for="charged">Amount charged to client</label>
+      <input type="number" id="charged" name="charged" step="0.01" min="0" value="{{ event.charged if event else '' }}">
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="client_id">Client</label>
+    <select id="client_id" name="client_id">
+      <option value="">No client linked</option>
+      {% for c in clients %}
+      <option value="{{ c.id }}" {{ 'selected' if current_client_id == c.id }}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="notes">Notes / story (shown publicly once completed)</label>
+    <textarea id="notes" name="notes">{{ event.notes if event else '' }}</textarea>
+  </div>
+
+  <div class="field">
+    <label for="photos">Add photos</label>
+    <input type="file" id="photos" name="photos" multiple accept="image/*">
+  </div>
+
+  <button type="submit" class="btn btn-primary">{{ 'Save Changes' if event else 'Create Event' }}</button>
+  <a href="{{ url_for('admin_events_list') }}" class="btn btn-outline">Cancel</a>
+</form>
+
+{% endblock %}

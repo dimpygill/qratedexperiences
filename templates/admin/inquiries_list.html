@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% block title %}Inquiries — Admin{% endblock %}
+{% block content %}
+
+<div class="admin-header">
+  <div>
+    <div class="mono">Leads</div>
+    <h2 class="mt-0">Inquiries</h2>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <a href="{{ url_for('admin_inquiries_list') }}" class="filter-chip {{ 'active' if not active_filter }}">All</a>
+  {% for s in statuses %}
+  <a href="{{ url_for('admin_inquiries_list', status=s) }}" class="filter-chip {{ 'active' if active_filter == s }}">{{ s }}</a>
+  {% endfor %}
+</div>
+
+{% if inquiries %}
+<table class="data-table">
+  <thead><tr><th>Name</th><th>Contact</th><th>Event Type</th><th>Date</th><th>Guests</th><th>Status</th><th>Received</th><th></th></tr></thead>
+  <tbody>
+    {% for i in inquiries %}
+    <tr>
+      <td>{{ i.name }}</td>
+      <td style="font-size:0.85rem;">{{ i.email }}<br>{{ i.phone or '' }}</td>
+      <td>{{ i.event_type or '—' }}</td>
+      <td>{{ i.event_date or '—' }}</td>
+      <td>{{ i.guests or '—' }}</td>
+      <td><span class="badge badge-status-{{ i.status }}">{{ i.status }}</span></td>
+      <td>{{ i.received_at or '—' }}</td>
+      <td class="row-actions">
+        <form method="POST" action="{{ url_for('admin_inquiry_update_status', inquiry_id=i.id) }}" class="inline-form">
+          <select name="status" onchange="this.form.submit()" style="padding:0.4em; border:1px solid var(--line); border-radius:var(--radius); font-size:0.82rem;">
+            {% for s in statuses %}
+            <option value="{{ s }}" {{ 'selected' if i.status == s }}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </form>
+        <form method="POST" action="{{ url_for('admin_inquiry_convert', inquiry_id=i.id) }}">
+          <button type="submit" class="btn btn-outline btn-sm">Convert to Event</button>
+        </form>
+      </td>
+    </tr>
+    {% if i.message %}
+    <tr><td colspan="8" style="font-size:0.85rem; opacity:0.7; background:var(--ivory-dim);">{{ i.message }}</td></tr>
+    {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+  <h3>No inquiries yet</h3>
+  <p>Inquiries submitted through the public site will appear here.</p>
+</div>
+{% endif %}
+
+{% endblock %}

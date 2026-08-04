@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Q-Rated Experiences</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+  <div class="login-shell">
+    <div class="login-card">
+      <div class="brand" style="margin-bottom: var(--space-3); justify-content:center; width:100%;">
+        <img src="{{ url_for('static', filename='img/logo-on-light.png') }}" alt="Q-Rated Experiences" class="brand-logo brand-logo-lg">
+      </div>
+      <div class="mono" style="margin-bottom: 1.5em;">Admin Sign In</div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autofocus>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Sign In</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
