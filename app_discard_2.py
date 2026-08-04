@@ -67,11 +67,7 @@ def currency_filter(value):
         return "$0"
 
 
-@app.template_filter("main_media")
-def main_media_filter(photos):
-    if photos and isinstance(photos, list) and len(photos) > 0:
-        return photos[0]
-    return None
+@app.template_filter("first_photo")
 def first_photo_filter(photos):
     if photos and isinstance(photos, list) and len(photos) > 0:
         for p in photos:
@@ -124,14 +120,6 @@ def public_event_detail(event_id):
     if event is None or event.get("status") != "Completed":
         return render_template("public/404.html"), 404
     return render_template("public/event_detail.html", event=event)
-
-
-@app.route("/dishes/<dish_id>")
-def public_dish_detail(dish_id):
-    dish = db.get_record_friendly("dishes", dish_id)
-    if dish is None:
-        return render_template("public/404.html"), 404
-    return render_template("public/dish_detail.html", dish=dish)
 
 
 @app.route("/inquire", methods=["GET", "POST"])
@@ -301,11 +289,7 @@ def admin_event_edit(event_id):
         if remove_ids:
             existing = [p for p in existing if p.get("id") not in remove_ids]
 
-        main_id = request.form.get("main_photo")
-        if main_id:
-            existing.sort(key=lambda p: 0 if p.get("id") == main_id else 1)
-
-        if remove_ids or new_attachments or main_id:
+        if remove_ids or new_attachments:
             db.update_record_friendly(
                 "events", event_id, {"photos": existing + new_attachments}
             )
@@ -485,15 +469,11 @@ def admin_dish_edit(dish_id):
         if remove_ids:
             existing = [p for p in existing if p.get("id") not in remove_ids]
 
-        main_id = request.form.get("main_photo")
-        if main_id:
-            existing.sort(key=lambda p: 0 if p.get("id") == main_id else 1)
-
         photos = request.files.getlist("photos")
         urls = save_uploaded_files(photos)
         new_attachments = to_attachments(urls)
 
-        if remove_ids or new_attachments or main_id:
+        if remove_ids or new_attachments:
             db.update_record_friendly("dishes", dish_id, {"photos": existing + new_attachments})
 
         flash("Dish updated.", "success")

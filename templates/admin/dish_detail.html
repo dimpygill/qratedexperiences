@@ -1,0 +1,55 @@
+{% extends "public/base.html" %}
+{% block title %}{{ dish.name }} — Q-Rated Experiences{% endblock %}
+{% block content %}
+
+<section class="hero" style="min-height: 45vh;">
+  {% set main = dish.photos|main_media %}
+  {% if main and main.url|is_video %}
+  <div class="hero-media"><video src="{{ main.url }}" autoplay muted loop playsinline></video></div>
+  {% elif main %}
+  <div class="hero-media" style="background-image:url('{{ main.url }}')"></div>
+  {% else %}
+  <div class="hero-media"></div>
+  {% endif %}
+  <div class="hero-gradient-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">{{ dish.category or 'Dish' }}</div>
+    <h1>{{ dish.name }}</h1>
+  </div>
+</section>
+
+{% if dish.photos and dish.photos|length > 1 %}
+<section class="section-tight">
+  <div class="container">
+    <div class="runner"><span class="runner-label">Gallery</span></div>
+    <div class="grid grid-3">
+      {% for item in dish.photos[1:] %}
+      {% if item.url|is_video %}
+      <video class="card-media" style="border-radius: var(--radius); aspect-ratio: 1; object-fit: cover;" src="{{ item.url }}" controls muted></video>
+      {% else %}
+      <div class="card-media" style="border-radius: var(--radius); background-image:url('{{ item.url }}'); aspect-ratio: 1;"></div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if dish.ingredients %}
+<section class="section-tight">
+  <div class="container" style="max-width: 720px;">
+    <div class="runner"><span class="runner-label">Ingredients & Notes</span></div>
+    <p style="font-size: 1.05rem; white-space: pre-line;">{{ dish.ingredients }}</p>
+  </div>
+</section>
+{% endif %}
+
+<section class="section-tight" style="background: var(--ink); color: var(--ivory);">
+  <div class="container text-center">
+    <h2 style="color: var(--ivory);">Planning something of your own?</h2>
+    <p style="opacity:0.75; max-width: 480px; margin: 0 auto var(--space-3);">Let's design a menu and presentation just as considered for your event.</p>
+    <a href="{{ url_for('public_inquire') }}" class="btn btn-outline-light">Request a Quote</a>
+  </div>
+</section>
+
+{% endblock %}
