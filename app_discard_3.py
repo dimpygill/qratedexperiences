@@ -72,9 +72,6 @@ def main_media_filter(photos):
     if photos and isinstance(photos, list) and len(photos) > 0:
         return photos[0]
     return None
-
-
-@app.template_filter("first_photo")
 def first_photo_filter(photos):
     if photos and isinstance(photos, list) and len(photos) > 0:
         for p in photos:
